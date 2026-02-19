@@ -1,0 +1,4 @@
+You did not learn how to normalize the clips. You need to do it manually
+You should include the streamer name into each video - ffmpegs drawtext doesnt seem to work
+Gameplay detection shouldnt be done through color matching
+It is not on git
