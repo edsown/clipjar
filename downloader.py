@@ -1,6 +1,5 @@
 import subprocess
 import os
-from config import CLIPS_FOLDER, GAME_NAME, MAX_WORKERS
 import shutil
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -9,9 +8,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 class ClipDownloader: 
-    def __init__(self, clips_folder = CLIPS_FOLDER, max_workers = int(MAX_WORKERS)):
+    def __init__(self, clips_folder, max_workers, game_name):
         self.clips_folder = clips_folder
         self.max_workers = max_workers
+        self.game_name = game_name
         self._ensure_clips_folder()
 
     def download_clips(self, clip_data):
@@ -32,7 +32,7 @@ class ClipDownloader:
         return [path for path in ordered_results if path]
 
     def _download_one(self, clip):
-        filename = f"{GAME_NAME}_{clip['broadcaster_name']}_{datetime.now().isoformat()}"
+        filename = f"{self.game_name}_{clip['broadcaster_name']}_{datetime.now().isoformat()}"
         command = [
             "twitch-dl", "download", clip["url"], 
             "-q", "source", 

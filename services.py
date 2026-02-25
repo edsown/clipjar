@@ -1,5 +1,5 @@
 import logging
-import filter
+from filter import MotionDetector
 from typing import List, Tuple
 
 logger = logging.getLogger(__name__)
@@ -9,7 +9,7 @@ class ClipFilterService:
     
     def __init__(self, talking_language: str, motion_threshold: float):
         self.talking_language = talking_language
-        self.motion_threshold = motion_threshold
+        self.motion_detector = MotionDetector(motion_threshold)
     
     def filter_by_motion_and_language(
         self, 
@@ -34,7 +34,7 @@ class ClipFilterService:
             logger.debug(f"Kept {self.talking_language} clip: {clip['broadcaster_name']}")
             return True
         
-        has_motion = filter.has_motion(path, motion_threshold=self.motion_threshold)
+        has_motion = self.motion_detector.has_motion(path)
         if has_motion:
             logger.debug(f"Kept high-motion clip: {clip['broadcaster_name']}")
         

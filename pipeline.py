@@ -10,61 +10,50 @@ logger = logging.getLogger(__name__)
 
 
 class ClipPipeline:
-    """Orchestrates the entire clip processing workflow"""
     
     def __init__(self, config):
         self.config = config
         
-        # Initialize components
         self.fetcher = fetcher.Fetcher(config)
         self.downloader = downloader.ClipDownloader(
-            clips_folder=config.output.clips_folder,
-            max_workers=config.processing.max_workers
+            clips_folder=config['output']['clips_folder'],
+            max_workers=config['processing']['max_workers'],
+            game_name=config['game']['name']
         )
         self.filter_service = ClipFilterService(
-            talking_language=config.filter.talking_clips_language,
-            motion_threshold=config.filter.motion_threshold
+            talking_language=config['filter']['talking_clips_language'],
+            motion_threshold=config['filter']['motion_threshold']
         )
         self.merger = merger.Merger(
-            width=config.output.width,
-            height=config.output.height,
-            fps=config.output.fps,
-            use_hw_accel=config.output.use_hw_accel
+            width=config['output']['width'],
+            height=config['output']['height'],
+            fps=config['output']['fps'],
+            use_hw_accel=config['output']['use_hw_accel']
         )
         self.selector = ClipSelector()
         self.extractor = ClipDataExtractor()
     
     def run(self) -> Optional[str]:
-        """
-        Execute the full pipeline.
-        Returns: Path to output video or None if failed
-        """
-        # Step 1: Fetch clips
         clips = self._fetch_clips()
         if not clips:
             return None
         
-        # Step 2: Select clips by duration
         selected_clips = self._select_clips(clips)
         if not selected_clips:
             return None
         
-        # Step 3: Download clips
         paths = self._download_clips(selected_clips)
         if not paths:
             return None
         
-        # Step 4: Filter clips
         filtered_paths, filtered_clips = self._filter_clips(paths, selected_clips)
         if not filtered_paths:
             return None
         
-        # Step 5: Merge clips
         output_path = self._merge_clips(filtered_paths, filtered_clips)
         return output_path
     
     def _fetch_clips(self):
-        """Step 1: Fetch clips from Twitch"""
         logger.info("=" * 60)
         logger.info("STEP 1: Fetching clips from Twitch")
         logger.info("=" * 60)
@@ -81,14 +70,13 @@ class ClipPipeline:
             return []
     
     def _select_clips(self, clips):
-        """Step 2: Select clips by duration"""
         logger.info("=" * 60)
         logger.info("STEP 2: Selecting clips by duration")
         logger.info("=" * 60)
         
         selected = self.selector.select_by_duration(
             clips, 
-            self.config.clips.max_duration
+            self.config['clips']['max_duration']
         )
         
         if selected:
@@ -99,13 +87,12 @@ class ClipPipeline:
         return selected
     
     def _download_clips(self, clips):
-        """Step 3: Download clips"""
         logger.info("=" * 60)
         logger.info("STEP 3: Downloading clips")
         logger.info("=" * 60)
         
         try:
-            paths = self.downloader.download_clips(clips, self.config.game.name)
+            paths = self.downloader.download_clips(clips)
             if paths:
                 logger.info(f"✓ Downloaded {len(paths)}/{len(clips)} clips")
             else:
@@ -116,7 +103,6 @@ class ClipPipeline:
             return []
     
     def _filter_clips(self, paths, clips):
-        """Step 4: Filter clips by motion and language"""
         logger.info("=" * 60)
         logger.info("STEP 4: Filtering clips")
         logger.info("=" * 60)
@@ -138,7 +124,6 @@ class ClipPipeline:
             return [], []
     
     def _merge_clips(self, paths, clips):
-        """Step 5: Merge clips into final video"""
         logger.info("=" * 60)
         logger.info("STEP 5: Merging clips")
         logger.info("=" * 60)
@@ -147,7 +132,7 @@ class ClipPipeline:
             streamer_names = self.extractor.get_streamer_names(clips)
             view_counts = self.extractor.get_view_counts(clips)
             
-            output_path = f"{self.config.game.name}.mp4"
+            output_path = f"{self.config['game']['name']}.mp4"
             
             self.merger.merge_clips(
                 paths, 
