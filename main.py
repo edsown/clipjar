@@ -1,20 +1,124 @@
 import util
 import fetcher
-from datetime import datetime
 import downloader
-from config import MAX_DURATION, GAME_NAME
+from config import MAX_DURATION, TALKING_CLIPS_LANGUAGE, MOTION_THRESHOLD
 import merger
 import filter
+import logging
+import argparse
+import sys
+from config import ConfigLoader
+from pipeline import ClipPipeline
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+
+def parse_args():
+    """Parse command line arguments"""
+    parser = argparse.ArgumentParser(
+        description="Generate highlight compilations from Twitch clips",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  python main.py valorant
+  python main.py league_of_legends
+  python main.py --list
+        """
+    )
+    
+    parser.add_argument(
+        'game',
+        type=str,
+        nargs='?',
+        help='Game name (must match a YAML file in configs/)'
+    )
+    
+    parser.add_argument(
+        '--list',
+        action='store_true',
+        help='List all available game configurations'
+    )
+    
+    parser.add_argument(
+        '--verbose', '-v',
+        action='store_true',
+        help='Enable verbose debug logging'
+    )
+    
+    return parser.parse_args()
+
+
+def list_games():
+    """List available game configurations"""
+    games = ConfigLoader.list_available_games()
+    
+    if not games:
+        print("\nNo game configurations found in configs/ directory")
+        print("Create a YAML file (e.g., configs/valorant.yaml)")
+        return
+    
+    print("\nAvailable game configurations:")
+    for game in sorted(games):
+        print(f"  • {game}")
+    print()
+
+
+def main():
+    """Main entry point"""
+    args = parse_args()
+    
+    # Set log level
+    if args.verbose:
+        logging.getLogger().setLevel(logging.DEBUG)
+    
+    # Handle --list flag
+    if args.list:
+        list_games()
+        return
+    
+    # Require game argument
+    if not args.game:
+        logger.error("Error: game name is required")
+        print("\nUsage: python main.py <game_name>")
+        print("Use --list to see available games")
+        sys.exit(1)
+    
+    # Load configuration
+    try:
+        config = ConfigLoader.load(args.game)
+        logger.info(f"Loaded configuration for: {config.game.name}")
+    except FileNotFoundError as e:
+        logger.error(str(e))
+        print("\nUse --list to see available games")
+        sys.exit(1)
+    except Exception as e:
+        logger.error(f"Error loading config: {e}")
+        sys.exit(1)
+    
+    # Run pipeline
+    try:
+        pipeline = ClipPipeline(config)
+        output = pipeline.run()
+        
+        if output:
+            logger.info("=" * 60)
+            logger.info(f"✓ SUCCESS! Video compilation complete: {output}")
+            logger.info("=" * 60)
+        else:
+            logger.error("Pipeline failed")
+            sys.exit(1)
+            
+    except KeyboardInterrupt:
+        logger.info("\nProcess interrupted by user")
+        sys.exit(0)
+    except Exception as e:
+        logger.error(f"Unexpected error: {e}", exc_info=True)
+        sys.exit(1)
 
 
 if __name__ == "__main__":
-    clip_data = fetcher.get_clips()
-    clip_amount = util.get_clip_amount(clip_data, max_duration=MAX_DURATION)
-    clip_data = clip_data[:clip_amount]
-    gameplay_clips = filter.filter_gameplay_clips(clip_data)
-    clip_downloader = downloader.ClipDownloader()
-    paths = clip_downloader.download_clips(gameplay_clips)
-    if paths:
-        merger.merge_clips(paths)
-    else:
-        print("No clips to merge.")
+    main()

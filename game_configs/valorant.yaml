@@ -1,0 +1,23 @@
+game:
+  id: "516575"
+  name: "VALORANT"
+
+clips:
+  count: 100
+  age_days: 7
+  max_duration: 300
+  min_views: 10
+
+filter:
+  motion_threshold: 20.0
+  talking_clips_language: "en"
+
+output:
+  clips_folder: "./clips"
+  width: 1920
+  height: 1080
+  fps: 30
+  use_hw_accel: true
+
+processing:
+  max_workers: 4
