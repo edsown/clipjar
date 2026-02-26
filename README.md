@@ -1,4 +1,4 @@
-# automoments
+# ClipJar
 
 Makes compilation videos from Twitch clips. Downloads clips, filters out boring ones with motion detection, merges them together.
 
