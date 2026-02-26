@@ -91,15 +91,13 @@ def main():
         output = pipeline.run()
         
         if output:
-            logger.info("=" * 60)
-            logger.info(f"Video compilation complete: {output}")
-            logger.info("=" * 60)
+            logger.info(f"All done! Video saved to {output}")
         else:
-            logger.error("Pipeline failed")
+            logger.error("Something went wrong")
             sys.exit(1)
             
     except KeyboardInterrupt:
-        logger.info("\nProcess interrupted by user")
+        logger.info("Stopped by user")
         sys.exit(0)
     except Exception as e:
         logger.error(f"Unexpected error: {e}", exc_info=True)

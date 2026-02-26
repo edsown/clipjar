@@ -1,0 +1,19 @@
+game:
+  id: "515025"
+  name: Overwatch
+clips:
+  count: 100
+  age_days: 7
+  max_duration: 600
+  min_views: 20
+filter:
+  motion_threshold: 22.0
+  talking_clips_language: en
+output:
+  clips_folder: ./clips
+  width: 1920
+  height: 1080
+  fps: 30
+  use_hw_accel: true
+processing:
+  max_workers: 4

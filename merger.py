@@ -33,7 +33,6 @@ class Merger:
             
             inputs.extend(["-i", path])
             
-            # Get metadata for this clip
             streamer = streamer_names[i] if i < len(streamer_names) else 'Unknown'
             views = view_counts[i] if i < len(view_counts) else 0
             
@@ -56,17 +55,16 @@ class Merger:
         
         cmd = self._build_ffmpeg_command(inputs, filter_complex, output_path)
         
-        logger.info(f"Starting FFmpeg merge process for {n} clips...")
+        logger.info(f"Merging {n} clips with FFmpeg")
         result = subprocess.run(cmd, capture_output=True, text=True)
         
         if result.returncode != 0:
-            logger.error(f"FFmpeg failed with error:\n{result.stderr}")
+            logger.error(f"FFmpeg error: {result.stderr}")
             raise RuntimeError("FFmpeg failed")
         else:
-            logger.info(f"Successfully merged {n} clips into {output_path}")
+            logger.info(f"Merged {n} clips into {output_path}")
     
     def _build_ffmpeg_command(self, inputs, filter_complex, output_path):
-        """Build FFmpeg command based on acceleration settings"""
         if self.use_hw_accel:
             return [
                 "ffmpeg", "-y",

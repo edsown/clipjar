@@ -26,17 +26,17 @@ class ClipFilterService:
             else:
                 self._log_filtered_clip(clip)
         
-        logger.info(f"Kept {len(filtered_clips)}/{len(clips)} clips after filtering")
+        logger.info(f"Kept {len(filtered_clips)} of {len(clips)} clips")
         return active_paths, filtered_clips
     
     def _should_keep_clip(self, path: str, clip: dict) -> bool:
         if clip.get("language") == self.talking_language:
-            logger.debug(f"Kept {self.talking_language} clip: {clip['broadcaster_name']}")
+            logger.debug(f"Keeping {clip['broadcaster_name']} ({self.talking_language} clip)")
             return True
         
         has_motion = self.motion_detector.has_motion(path)
         if has_motion:
-            logger.debug(f"Kept high-motion clip: {clip['broadcaster_name']}")
+            logger.debug(f"Keeping {clip['broadcaster_name']} (good motion)")
         
         return has_motion
     
@@ -67,5 +67,5 @@ class ClipSelector:
             selected.append(clip)
             total_duration += clip["duration"]
         
-        logger.info(f"Selected {len(selected)} clips (total: {total_duration:.1f}s)")
+        logger.info(f"Selected {len(selected)} clips, total {total_duration:.1f}s")
         return selected

@@ -54,25 +54,21 @@ class ClipPipeline:
         return output_path
     
     def _fetch_clips(self):
-        logger.info("=" * 60)
-        logger.info("STEP 1: Fetching clips from Twitch")
-        logger.info("=" * 60)
+        logger.info("Fetching clips from Twitch")
         
         try:
             clips = self.fetcher.get_clips()
             if clips:
-                logger.info(f"✓ Fetched {len(clips)} clips")
+                logger.info(f"Got {len(clips)} clips")
             else:
-                logger.warning("No clips found")
+                logger.warning("Couldn't find any clips")
             return clips
         except Exception as e:
             logger.error(f"Failed to fetch clips: {e}")
             return []
     
     def _select_clips(self, clips):
-        logger.info("=" * 60)
-        logger.info("STEP 2: Selecting clips by duration")
-        logger.info("=" * 60)
+        logger.info("Selecting clips by duration")
         
         selected = self.selector.select_by_duration(
             clips, 
@@ -80,32 +76,28 @@ class ClipPipeline:
         )
         
         if selected:
-            logger.info(f"✓ Selected {len(selected)} clips")
+            logger.info(f"Selected {len(selected)} clips")
         else:
-            logger.warning("No clips selected")
+            logger.warning("No clips matched duration criteria")
         
         return selected
     
     def _download_clips(self, clips):
-        logger.info("=" * 60)
-        logger.info("STEP 3: Downloading clips")
-        logger.info("=" * 60)
+        logger.info("Downloading clips")
         
         try:
             paths = self.downloader.download_clips(clips)
             if paths:
-                logger.info(f"✓ Downloaded {len(paths)}/{len(clips)} clips")
+                logger.info(f"Downloaded {len(paths)} of {len(clips)} clips")
             else:
-                logger.warning("No clips downloaded successfully")
+                logger.warning("No clips were downloaded")
             return paths
         except Exception as e:
-            logger.error(f"Failed to download clips: {e}")
+            logger.error(f"Download failed: {e}")
             return []
     
     def _filter_clips(self, paths, clips):
-        logger.info("=" * 60)
-        logger.info("STEP 4: Filtering clips")
-        logger.info("=" * 60)
+        logger.info("Filtering clips by motion and language")
         
         try:
             filtered_paths, filtered_clips = self.filter_service.filter_by_motion_and_language(
@@ -114,19 +106,17 @@ class ClipPipeline:
             )
             
             if filtered_paths:
-                logger.info(f"✓ {len(filtered_paths)} clips passed filtering")
+                logger.info(f"{len(filtered_paths)} clips passed filtering")
             else:
-                logger.warning("No clips passed filtering")
+                logger.warning("No clips passed the filters")
             
             return filtered_paths, filtered_clips
         except Exception as e:
-            logger.error(f"Failed to filter clips: {e}")
+            logger.error(f"Filtering failed: {e}")
             return [], []
     
     def _merge_clips(self, paths, clips):
-        logger.info("=" * 60)
-        logger.info("STEP 5: Merging clips")
-        logger.info("=" * 60)
+        logger.info("Merging clips into final video")
         
         try:
             streamer_names = self.extractor.get_streamer_names(clips)
@@ -141,8 +131,8 @@ class ClipPipeline:
                 output_path=output_path
             )
             
-            logger.info(f"✓ Video saved: {output_path}")
+            logger.info(f"Saved video to {output_path}")
             return output_path
         except Exception as e:
-            logger.error(f"Failed to merge clips: {e}")
+            logger.error(f"Merge failed: {e}")
             return None
