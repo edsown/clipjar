@@ -1,10 +1,13 @@
 import logging
 from typing import Optional
-import fetcher
-import downloader
-import merger
-from services import ClipFilterService, ClipDataExtractor, ClipSelector
-from config import ConfigLoader
+from automoments.services import (
+    Fetcher,
+    ClipDownloader,
+    Merger,
+    ClipFilterService,
+    ClipDataExtractor,
+    ClipSelector
+)
 
 logger = logging.getLogger(__name__)
 
@@ -14,8 +17,8 @@ class ClipPipeline:
     def __init__(self, config):
         self.config = config
         
-        self.fetcher = fetcher.Fetcher(config)
-        self.downloader = downloader.ClipDownloader(
+        self.fetcher = Fetcher(config)
+        self.downloader = ClipDownloader(
             clips_folder=config['output']['clips_folder'],
             max_workers=config['processing']['max_workers'],
             game_name=config['game']['name']
@@ -24,7 +27,7 @@ class ClipPipeline:
             talking_language=config['filter']['talking_clips_language'],
             motion_threshold=config['filter']['motion_threshold']
         )
-        self.merger = merger.Merger(
+        self.merger = Merger(
             width=config['output']['width'],
             height=config['output']['height'],
             fps=config['output']['fps'],
@@ -111,6 +114,7 @@ class ClipPipeline:
                 logger.warning("No clips passed the filters")
             
             return filtered_paths, filtered_clips
+        
         except Exception as e:
             logger.error(f"Filtering failed: {e}")
             return [], []

@@ -1,5 +1,5 @@
 import logging
-from filter import MotionDetector
+from automoments.services.filter import MotionDetector
 from typing import List, Tuple
 
 logger = logging.getLogger(__name__)

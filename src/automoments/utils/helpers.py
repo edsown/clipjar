@@ -27,4 +27,3 @@ def get_clip_paths(folder="clips"):
         for f in files
         if f.endswith(".mp4")
     ]
-

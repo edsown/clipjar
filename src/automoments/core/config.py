@@ -8,7 +8,7 @@ load_dotenv()
 
 class ConfigLoader:
     
-    CONFIG_DIR = Path(__file__).parent / "game_configs"
+    CONFIG_DIR = Path(__file__).parent.parent.parent.parent / "config"
     
     @classmethod
     def load(cls, game_name: str) -> dict:
