@@ -12,7 +12,6 @@ class ConfigLoader:
     
     @classmethod
     def load(cls, game_name: str) -> dict:
-        """Load configuration for a specific game"""
         config_path = cls.CONFIG_DIR / f"{game_name}.yaml"
         
         if not config_path.exists():
