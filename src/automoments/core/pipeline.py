@@ -126,7 +126,7 @@ class ClipPipeline:
             streamer_names = self.extractor.get_streamer_names(clips)
             view_counts = self.extractor.get_view_counts(clips)
             
-            output_path = f"{self.config['game']['name']}.mp4"
+            output_path = f"output/{self.config['game']['name']}.mp4"
             
             self.merger.merge_clips(
                 paths, 

@@ -80,7 +80,7 @@ def main():
     
     try:
         config = ConfigLoader.load(args.game)
-        logger.info(f"Loaded configuration for: {config["game"]["name"]}")
+        logger.info(f"Loaded configuration for: {config['game']['name']}")
     except FileNotFoundError as e:
         logger.error(str(e))
         print("\nUse --list to see available games")

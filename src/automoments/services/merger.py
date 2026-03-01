@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 
 class Merger:
-    def __init__(self, width=1920, height=1080, fps=30, use_hw_accel=True):
+    def __init__(self, width=1920, height=1080, fps=30, use_hw_accel=False):
         self.width = width
         self.height = height
         self.fps = fps
