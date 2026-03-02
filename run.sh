@@ -17,7 +17,6 @@ if [ "$1" = "--update-ids" ]; then
     exit 0
 fi
 
-# Run container
 docker run --rm \
   --env-file .env \
   -v "$(pwd)/output:/app/output" \
