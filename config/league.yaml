@@ -7,13 +7,13 @@ clips:
   max_duration: 600
   min_views: 50
 filter:
-  motion_threshold: 10.0
+  motion_threshold: 8.0
   talking_clips_language: en
 output:
   clips_folder: ./clips
   width: 1920
   height: 1080
   fps: 30
-  use_hw_accel: true
+  use_hw_accel: false
 processing:
   max_workers: 6

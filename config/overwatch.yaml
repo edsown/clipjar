@@ -4,7 +4,7 @@ game:
 clips:
   count: 100
   age_days: 7
-  max_duration: 600
+  max_duration: 100
   min_views: 20
 filter:
   motion_threshold: 22.0

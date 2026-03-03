@@ -1,6 +1,6 @@
 game:
-  id: "29595"
-  name: Dota_2
+  id: '29595'
+  name: Dota 2
 clips:
   count: 100
   age_days: 7
@@ -14,6 +14,6 @@ output:
   width: 1920
   height: 1080
   fps: 30
-  use_hw_accel: true
+  use_hw_accel: false
 processing:
   max_workers: 4

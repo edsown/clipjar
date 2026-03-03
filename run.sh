@@ -8,12 +8,13 @@ if [ -z "$1" ]; then
 fi
 
 if [ "$1" = "--update-ids" ]; then
-    echo "🔄 Updating game IDs..."
+    echo "Updating game IDs"
     docker run --rm \
       --env-file .env \
       -v "$(pwd)/scripts:/app/scripts" \
       -v "$(pwd)/config:/app/config" \
-      clipjar:latest python scripts/update_game_ids.py
+      --entrypoint python \
+      clipjar:latest scripts/update_game_ids.py
     exit 0
 fi
 
