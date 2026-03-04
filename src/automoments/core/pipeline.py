@@ -6,7 +6,8 @@ from automoments.services import (
     Merger,
     ClipFilterService,
     ClipDataExtractor,
-    ClipSelector
+    ClipSelector,
+    ThumbnailGenerator
 )
 
 logger = logging.getLogger(__name__)
@@ -35,6 +36,7 @@ class ClipPipeline:
         )
         self.selector = ClipSelector()
         self.extractor = ClipDataExtractor()
+        self.thumbnail_generator = ThumbnailGenerator()
     
     def run(self) -> Optional[str]:
         clips = self._fetch_clips()
@@ -52,6 +54,8 @@ class ClipPipeline:
         filtered_paths, filtered_clips = self._filter_clips(paths, selected_clips)
         if not filtered_paths:
             return None
+        
+        self._generate_thumbnail(selected_clips[0]["thumbnail_url"])
         
         output_path = self._merge_clips(filtered_paths, filtered_clips)
         return output_path
@@ -140,3 +144,12 @@ class ClipPipeline:
         except Exception as e:
             logger.error(f"Merge failed: {e}")
             return None
+        
+    def _generate_thumbnail(self, thumbnail_url): 
+        logger.info("Generating thumbnail image")
+
+        try: 
+            self.thumbnail_generator.create_thumbnail(thumbnail_url, "output/thumbnail.jpeg", "EPIC PLAYS")
+            
+        except Exception as e:
+            logger.error(f"Thumbnail generation failed: {e}")

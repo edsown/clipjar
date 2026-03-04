@@ -9,6 +9,7 @@ from automoments.services.clip_services import (
     ClipDataExtractor,
     ClipSelector
 )
+from automoments.services.thumbnail_generator import ThumbnailGenerator
 
 __all__ = [
     'Fetcher',
@@ -17,5 +18,6 @@ __all__ = [
     'Merger',
     'ClipFilterService',
     'ClipDataExtractor',
-    'ClipSelector'
+    'ClipSelector',
+    'ThumbnailGenerator'
 ]
